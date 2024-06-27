@@ -1,0 +1,90 @@
+@startuml "Диаграмма классов"
+
+abstract class "Player" as Player {
+    - nickName : String
+    - currentGame : Game
+    + startGame(Game game): void
+}
+
+class "Wisher" as Wisher {
+    + makeWord(Word word, Game game) : void
+}
+
+class "Guesser" as Guesser {
+    + nameLetter(Letter letter, Game game) : bool
+}
+
+class "Game" as Game {
+    - status : GameStatus
+    - hangmanStatus : HangmanStatus
+    - hiddenWord : Word
+    - players : Player[2]
+    - renderingEngine : RenderingEngine
+    - hangmanMachine : HangmanMachine
+    - gameMachine : GameMachine
+    + Game(Player[] players)
+    + Game(Player[] players, Word hiddenWord)
+    + InitWord(Word hiddenWord)
+    + guessLetterInWord(Letter letter) : bool
+}
+
+class "Word" as Word {
+    - word : List<Letter>
+}
+
+class "Letter" as Letter {
+    - letter : Character
+}
+
+class "RenderingEngine" as RenderingEngine {
+    + RenderGame(Game game) : void
+}
+
+class "GameStatus" as GameStatus {
+    + CONTINUING
+    + WISHER_WON
+    + GUESSER_WON
+}
+
+
+class "HangmanStatus" as HangmanStatus {
+    + EMPTY
+    + HEAD
+    + BODY
+    + LEFT_HAND
+    + RIGHT_HAND
+    + LEFT_LEG
+    + RIGHT_LEG
+}
+
+abstract class "Machine<S, A>" as Machine {
+    - transitionTable : Map<Pair<S, A>, S>
+    + transit(Pair<S, A> transition) : S
+}
+
+class "HangmanMachine<HangmanStatus, bool>" as HangmanMachine {
+    - transitionTable : Map<Pair<HangmanStatus, bool>, HangmanStatus>
+    + transit(Pair<HangmanStatus, bool> transition) : HangmanStatus
+}
+
+class "GameMachine<GameStatus, Pair<HangmanStatus, bool>>" as GameMachine {
+    - transitionTable : Map<Pair<GameStatus, Pair<HangmanStatus, bool>>, GameStatus>
+    + transit(Pair<GameStatus, Pair<HangmanStatus, bool>> transition) : GameStatus
+}
+
+Wisher -up-||> Player
+Guesser -up-||> Player
+
+HangmanMachine -up-||> Machine
+GameMachine -up-||> Machine
+
+Game "0..1" o-- "2" Player : Играют в
+Game *-left- Word : Задается при создании
+Game o-right- HangmanMachine : Использует после хода
+Game o-up- GameMachine : Использует после хода
+Game *-- HangmanStatus
+Game *-- GameStatus
+Word o-down- Letter
+Game *-- RenderingEngine
+
+@enduml

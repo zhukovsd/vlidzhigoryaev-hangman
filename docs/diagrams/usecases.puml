@@ -1,0 +1,14 @@
+@startuml "Диаграмма вариантов использования"
+
+left to right direction
+
+actor "Загадывающий" as wisher
+actor "Отгадывающий" as guesser
+
+usecase "Загадать слово в\nсоответствии с правилами" as make_word
+usecase "Назвать следующую букву" as name_next_letter
+
+wisher --> make_word
+guesser --> name_next_letter
+
+@enduml
