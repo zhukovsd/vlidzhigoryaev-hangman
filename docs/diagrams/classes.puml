@@ -3,15 +3,15 @@
 abstract class "Player" as Player {
     - nickName : String
     - currentGame : Game
-    + startGame(Game game): void
+    + startGame(): void
 }
 
 class "Wisher" as Wisher {
-    + makeWord(Word word, Game game) : void
+    + makeWord(Word word) : void
 }
 
 class "Guesser" as Guesser {
-    + nameLetter(Letter letter, Game game) : bool
+    + nameLetter(Letter letter) : bool
 }
 
 class "Game" as Game {
@@ -29,11 +29,7 @@ class "Game" as Game {
 }
 
 class "Word" as Word {
-    - word : List<Letter>
-}
-
-class "Letter" as Letter {
-    - letter : Character
+    - word : String
 }
 
 class "RenderingEngine" as RenderingEngine {
@@ -58,18 +54,18 @@ class "HangmanStatus" as HangmanStatus {
 }
 
 abstract class "Machine<S, A>" as Machine {
-    - transitionTable : Map<Pair<S, A>, S>
-    + transit(Pair<S, A> transition) : S
+    # transitionFunction : Function<S, S>
+    + {abstract} transit(A transition) : S
 }
 
 class "HangmanMachine<HangmanStatus, bool>" as HangmanMachine {
-    - transitionTable : Map<Pair<HangmanStatus, bool>, HangmanStatus>
-    + transit(Pair<HangmanStatus, bool> transition) : HangmanStatus
+    # transitionFunction : Function<HangmanStatus, HangmanStatus>
+    + transit(bool isLastLetterGuessed) : HangmanStatus
 }
 
-class "GameMachine<GameStatus, Pair<HangmanStatus, bool>>" as GameMachine {
-    - transitionTable : Map<Pair<GameStatus, Pair<HangmanStatus, bool>>, GameStatus>
-    + transit(Pair<GameStatus, Pair<HangmanStatus, bool>> transition) : GameStatus
+class "GameMachine<GameStatus, Game>" as GameMachine {
+    # transitionFunction : Function<GameStatus, GameStatus>
+    + transit(Game transition) : GameStatus
 }
 
 Wisher -up-||> Player
@@ -84,7 +80,6 @@ Game o-right- HangmanMachine : Использует после хода
 Game o-up- GameMachine : Использует после хода
 Game *-- HangmanStatus
 Game *-- GameStatus
-Word o-down- Letter
 Game *-- RenderingEngine
 
 @enduml
