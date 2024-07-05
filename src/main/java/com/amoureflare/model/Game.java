@@ -59,15 +59,20 @@ public class Game {
     }
 
     public void guessLetter(Character letter) {
-        lastLetter = letter;
-        if (hiddenWord.containsLetter(letter) && !guessedWordPart.containsLetter(letter)) {
-            updateGuessedWordPart();
-            isLastLetterGuessed = true;
+        if (!isEnded() && isStarted()) {
+            lastLetter = letter;
+            if (hiddenWord.containsLetter(letter) && !guessedWordPart.containsLetter(letter)) {
+                updateGuessedWordPart();
+                isLastLetterGuessed = true;
+            } else {
+                isLastLetterGuessed = false;
+            }
+            hangmanStatus = hangmanMachine.transit(isLastLetterGuessed);
+            gameStatus = gameMachine.transit(this);
+            renderingEngine.render(this);
         } else {
-            isLastLetterGuessed = false;
+            throw new IllegalStateException("Game is already ended or not started");
         }
-        hangmanStatus = hangmanMachine.transit(isLastLetterGuessed);
-        gameStatus = gameMachine.transit(this);
     }
 
     public void requestStart(Player player) {
@@ -92,6 +97,10 @@ public class Game {
 
     public boolean isNotStarted() {
         return gameStatus == GameStatus.NOT_STARTED;
+    }
+
+    public boolean isStarted() {
+        return gameStatus != GameStatus.NOT_STARTED;
     }
 
     private void tryStartByPlayer(Player player) {
@@ -127,5 +136,9 @@ public class Game {
         }
 
         guessedWordPart = new Word(guessWordBuilder.toString());
+    }
+
+    public boolean isEnded() {
+        return gameStatus == GameStatus.WISHER_WON || gameStatus == GameStatus.GUESSER_WON;
     }
 }
