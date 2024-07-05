@@ -9,9 +9,9 @@ public class Wisher extends Player {
     }
 
     public void requestStartGame(Game game, Word wishedWord) {
+        game.addWisher(this);
+        game.initWord(wishedWord);
+        game.requestStart(this);
         currentGame = game;
-        currentGame.addWisher(this);
-        currentGame.initWord(wishedWord);
-        currentGame.requestStart(this);
     }
 }
